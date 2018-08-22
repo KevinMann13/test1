@@ -1,6 +1,6 @@
 import time
 
-def hello123(ds, **kwargs):
+def hello(ds, **kwargs):
     time.sleep(30)
     print("Hello world!")
     time.sleep(30)

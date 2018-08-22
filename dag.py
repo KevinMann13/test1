@@ -2,9 +2,11 @@ import airflow
 from builtins import range
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.python_operator import PythonOperator
 from airflow.models import DAG
 from datetime import timedelta
 
+from mypackage import foo
 
 args = {
     'owner': 'airflow',
@@ -13,10 +15,17 @@ args = {
 
 dag = DAG(dag_id='example_bash_operator', default_args=args)
 
-run_this = BashOperator(
-    task_id='echo_hello_world', bash_command='echo "hello world 123"', dag=dag)
+sleep1 = BashOperator(
+    task_id='sleepy_1', bash_command='sleep 1m', dag=dag)
 
-run_that = BashOperator(
-    task_id='sleepy', bash_command='sleep 2m', dag=dag)
+python_run = PythonOperator(
+    task_id='run_class_function',
+    provide_context=True,
+    python_callable=foo.hello,
+    dag=dag)
 
-run_this.set_upstream(run_that)
+sleep2 = BashOperator(
+    task_id='sleepy_2', bash_command='sleep 1m', dag=dag)
+
+python_run.set_upstream(sleep1)
+sleep2.set_upstream(python_run)

@@ -27,5 +27,12 @@ python_run = PythonOperator(
 sleep2 = BashOperator(
     task_id='sleepy_2', bash_command='sleep 1m', dag=dag)
 
+python_run2 = PythonOperator(
+    task_id='run_class_function_2',
+    provide_context=True,
+    python_callable=foo.foo,
+    dag=dag)
+
 python_run.set_upstream(sleep1)
 sleep2.set_upstream(python_run)
+python_run2.set_upstream(sleep2)
